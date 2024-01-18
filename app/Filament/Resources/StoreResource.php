@@ -175,6 +175,7 @@ class StoreResource extends Resource
             'categories.index' => CategoryPages\ListCategories::route('/{parent}/categories'),
             'categories.create' => CategoryPages\CreateCategory::route('/{parent}/categories/create'),
             'categories.edit' => CategoryPages\EditCategory::route('/{parent}/categories/{record}/edit'),
+            'categories.view' => CategoryPages\ViewCategory::route('/{parent}/categories/{record}'),
 
             'items.index' => ItemPages\ListItems::route('/{parent}/items'),
             'items.create' => ItemPages\CreateItem::route('/{parent}/items/create'),
