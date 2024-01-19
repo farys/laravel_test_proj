@@ -6,7 +6,7 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use App\Models\Store;
-use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Navigation\NavigationItem;
@@ -14,9 +14,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CategoryResource extends Resource
 {
@@ -26,10 +25,31 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): string
+    {
+        return __('Category');
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return __('Categories');
+    }
+
+    public static function getRecordTitle(?Model $record): string|null|Htmlable
+    {
+        return $record->name . ' (' . $record->store->domain . ')';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Fieldset::make('Store')
+                    ->relationship('store')
+                    ->schema([
+                        TextInput::make('domain')->disabled(),
+                    ]),
+                TextInput::make('title'),
                 TextInput::make('name'),
                 TextInput::make('link'),
             ]);
