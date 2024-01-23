@@ -6,6 +6,7 @@ use App\Filament\Forms\Inputs\TextInputWithSlugAttachedBuilder;
 use App\Filament\Resources\ProducentResource\Pages;
 use App\Filament\Resources\ProducentResource\ProducentImageFileUploadBuilder;
 use App\Models\BaseItemProducent;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -41,20 +42,30 @@ class ProducentResource extends Resource
     {
         return $form
             ->schema([
-                TextInputWithSlugAttachedBuilder::make('name', 'link')
-                    ->required(),
-                TextInput::make('title'),
-                TextInput::make('link')
-                    ->required()
-                    ->unique(BaseItemProducent::class, 'link', ignoreRecord: true),
-                ProducentImageFileUploadBuilder::make('image_file_name'),
-                TextInput::make('min_delivery_days')
-                    ->rule('gt:0')
-                    ->required(),
-                TextInput::make('max_delivery_days')
-                    ->gt('min_delivery_days')
-                    ->required(),
-            ]);
+
+                Grid::make(1)->columnSpan(1)->schema([
+                    TextInputWithSlugAttachedBuilder::make('name', 'link')
+                        ->columnSpan(2)
+                        ->required(),
+                    TextInput::make('title')
+                        ->columnSpan(2),
+                    TextInput::make('link')
+                        ->columnSpan(2)
+                        ->required()
+                        ->unique(BaseItemProducent::class, 'link', ignoreRecord: true),
+                ]),
+                Grid::make(2)->columnSpan(2)->schema([
+                    TextInput::make('min_delivery_days')
+                        ->rule('gt:0')
+                        ->columnSpan(1)
+                        ->required(),
+                    TextInput::make('max_delivery_days')
+                        ->gt('min_delivery_days')
+                        ->columnSpan(1)
+                        ->required(),
+                    ProducentImageFileUploadBuilder::make('image_file_name'),
+                ]),
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
