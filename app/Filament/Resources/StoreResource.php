@@ -15,6 +15,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use App\Filament\Resources\CategoryResource\Pages as CategoryPages;
 use App\Filament\Resources\ItemResource\Pages as ItemPages;
+use Symfony\Component\HttpFoundation\Request;
 
 class StoreResource extends Resource
 {
@@ -181,6 +183,26 @@ class StoreResource extends Resource
             'items.create' => ItemPages\CreateItem::route('/{parent}/items/create'),
             'items.edit' => ItemPages\EditItem::route('/{parent}/items/{record}/edit'),
 
+        ];
+    }
+
+    /**
+     * @return array<NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return [
+            NavigationItem::make(static::getNavigationLabel())
+                ->group(static::getNavigationGroup())
+                ->parentItem(static::getNavigationParentItem())
+                ->icon(static::getNavigationIcon())
+                ->activeIcon(static::getActiveNavigationIcon())
+                ->isActiveWhen(function(Request $request){
+                    return preg_match('/' . static::getRouteBaseName() . '.[^.]+$/u', $request->route()->getName()) === 1;
+                })
+                ->badge(static::getNavigationBadge(), color: static::getNavigationBadgeColor())
+                ->sort(static::getNavigationSort())
+                ->url(static::getNavigationUrl()),
         ];
     }
 }

@@ -7,6 +7,7 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers\ChildrenRelationManager;
 use App\Models\Category;
 use App\Models\Store;
+use App\Providers\Filament\AdminPanelProvider;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
@@ -130,12 +131,19 @@ class CategoryResource extends Resource
                 ->parentItem(static::getNavigationParentItem())
                 ->icon(static::getNavigationIcon())
                 ->activeIcon(static::getActiveNavigationIcon())
-                ->isActiveWhen(fn() => request()->routeIs(static::getRouteBaseName() . '.*'))
+                ->isActiveWhen(function(Request $request) use ($id){
+                    return $request->routeIs(static::getRouteBaseName() . '.*') && $request->route('parent') == $id;
+                })
                 ->badge(static::getNavigationBadge(), color: static::getNavigationBadgeColor())
                 ->sort(static::getNavigationSort())
                 ->url(StoreResource::getUrl('categories.index', ['parent' => $id]));
         }
 
         return $items;
+    }
+
+    public static function getRouteBaseName(?string $panel = null): string
+    {
+        return StoreResource::getRouteBaseName($panel) . '.categories';
     }
 }

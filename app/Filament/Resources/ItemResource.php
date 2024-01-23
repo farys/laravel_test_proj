@@ -27,6 +27,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Request;
 
 class ItemResource extends Resource
 {
@@ -165,12 +166,19 @@ class ItemResource extends Resource
                 ->parentItem(static::getNavigationParentItem())
                 ->icon(static::getNavigationIcon())
                 ->activeIcon(static::getActiveNavigationIcon())
-                ->isActiveWhen(fn() => request()->routeIs(static::getRouteBaseName() . '.*'))
+                ->isActiveWhen(function(Request $request) use ($id){
+                    return $request->routeIs(static::getRouteBaseName() . '.*') && $request->route('parent') == $id;
+                })
                 ->badge(static::getNavigationBadge(), color: static::getNavigationBadgeColor())
                 ->sort(static::getNavigationSort())
                 ->url(StoreResource::getUrl('items.index', ['parent' => $id]));
         }
 
         return $items;
+    }
+    
+    public static function getRouteBaseName(?string $panel = null): string
+    {
+        return StoreResource::getRouteBaseName($panel) . '.items';
     }
 }
