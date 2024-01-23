@@ -25,7 +25,7 @@ class Store extends Model
 
     function categories(): HasMany
     {
-        return $this->hasMany(Category::class);
+        return $this->hasMany(Category::class)->where('parent_id', '=', null);
     }
 
     function items(): HasMany
