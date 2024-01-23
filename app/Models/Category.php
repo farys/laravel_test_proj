@@ -16,7 +16,7 @@ class Category extends Model
 {
     use HasFactory, ValidatorTrait;
 
-    protected $fillable = ['name', 'store_id', 'info_description', 'link'];
+    protected $fillable = ['name', 'store_id', 'parent_id', 'info_description', 'link'];
 
     /**
      * Boot method.

@@ -2,20 +2,26 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CategoryResource\Actions\ViewAction;
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
+use App\Filament\Resources\CategoryResource\RelationManagers\ChildrenRelationManager;
 use App\Models\Category;
 use App\Models\Store;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\HttpFoundation\Request;
 
 class CategoryResource extends Resource
 {
@@ -44,13 +50,26 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
+                Hidden::make('store_id')
+                    ->default(function (Request $request) {
+                        return $request->route('parent');
+                    }),
                 Fieldset::make('Store')
                     ->relationship('store')
                     ->schema([
-                        TextInput::make('domain')->disabled(),
+                        TextInput::make('domain')
+                            ->disabled()
+                            ->default(function (Request $request) {
+                                return Store::find($request->route('parent'))->domain;
+                            }),
                     ]),
                 TextInput::make('title'),
-                TextInput::make('name'),
+                TextInput::make('name')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
+                        if (empty($get('link')))
+                            $set('link', \Str::slug($state));
+                    }),
                 TextInput::make('link'),
             ]);
     }
@@ -60,18 +79,13 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name'),
+                TextColumn::make('children_count')->counts('children'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->url(
-                        fn(Category $record): string => Pages\ViewCategory::getParentResource()::getUrl('categories.view', [
-                            'parent' => $record->store_id,
-                            'record' => $record->id,
-                        ])
-                    ),
+                ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->url(
                         fn(Category $record): string => Pages\EditCategory::getParentResource()::getUrl('categories.edit', [
@@ -84,13 +98,14 @@ class CategoryResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn(Builder $query) => $query->where('parent_id', '=', null));
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            ChildrenRelationManager::class,
         ];
     }
 
