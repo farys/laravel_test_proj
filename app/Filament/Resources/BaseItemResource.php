@@ -34,12 +34,12 @@ class BaseItemResource extends Resource
 
     public static function getLabel(): string
     {
-        return __('Base Item');
+        return __('Base item');
     }
 
     public static function getPluralLabel(): string
     {
-        return __('Base Items');
+        return __('Base items');
     }
 
     public static function getRecordTitle(?Model $record): string|null|Htmlable
