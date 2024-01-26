@@ -151,7 +151,8 @@ class BaseItemResource extends Resource
                 TextColumn::make('status')
             ])
             ->filters([
-                Filter::make('hidden')->query(fn(Builder $query): Builder => $query->hidden())
+                Filter::make('hidden')->query(fn(Builder $query): Builder => $query->hidden()),
+                Filter::make('not attached items')->query(fn(Builder $query): Builder => $query->whereDoesntHave('items'))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
