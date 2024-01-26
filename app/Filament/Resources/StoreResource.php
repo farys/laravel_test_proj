@@ -22,6 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use App\Filament\Resources\CategoryResource\Pages as CategoryPages;
 use App\Filament\Resources\ItemResource\Pages as ItemPages;
@@ -69,13 +70,13 @@ class StoreResource extends Resource
                     TextInput::make('site_title')
                         ->required(),
                     FileUpload::make('watermark_filename')
-                        ->directory("uploads/store_watermark")
+                        ->directory(config('images.store_watermark_path'))
                         ->image()
                         ->imageEditor()
                         ->avatar()
                         ->columns(1)
                         ->getUploadedFileNameForStorageUsing(
-                            fn(Get $get, TemporaryUploadedFile $file): string => (string) $get('domain') . '.' . $file->guessExtension(),
+                            fn(Get $get, TemporaryUploadedFile $file): string => (string) Str::slug($get('domain')) . '.' . $file->guessExtension(),
                         ),
 
                     Fieldset::make('Company teleinfo')->schema([

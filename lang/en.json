@@ -376,6 +376,8 @@
     "Producents": "Producents",
     "Producent": "Producent",
     "Image file name": "Image",
+    "Attachment file name": "Attached image",
+    "Represented base items": "Representative image for base items",
     "Min delivery days": "Minimal wait time for an order",
     "Max delivery days": "Miximal wait time for an order",
     "Descriptions": "Descriptions",

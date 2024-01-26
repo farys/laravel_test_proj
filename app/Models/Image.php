@@ -11,11 +11,22 @@ class Image extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'status',
+        'attachment_file_name',
+        'baseItems',
+        'representedBaseItems',
+    ];
+
+    protected $casts = [
+    ];
+
     function baseItems(): BelongsToMany{
         return $this->belongsToMany(BaseItem::class);
     }
 
     function representedBaseItems(): HasMany{
-        return $this->hasMany(BaseItem::class);
+        return $this->hasMany(BaseItem::class, 'image_id');
     }
 }
