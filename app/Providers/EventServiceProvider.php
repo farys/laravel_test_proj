@@ -2,8 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\BaseItem;
+use App\Models\BaseItemProducent;
+use App\Models\Category;
 use App\Models\Image;
-use App\Observers\ImageAttachmentManagerObserver;
+use App\Models\Store;
+use App\Observers\BaseItemObserver;
+use App\Observers\BaseItemProducentObserver;
+use App\Observers\CategoryObserver;
+use App\Observers\ImageObserver;
+use App\Observers\StoreObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -28,7 +36,11 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $observers = [
-        Image::class => [ImageAttachmentManagerObserver::class],
+        Category::class => [CategoryObserver::class],
+        BaseItem::class => [BaseItemObserver::class],
+        Image::class => [ImageObserver::class],
+        Store::class => [StoreObserver::class],
+        BaseItemProducent::class => [BaseItemProducentObserver::class],
     ];
 
     /**
