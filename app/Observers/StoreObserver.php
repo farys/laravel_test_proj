@@ -33,6 +33,13 @@ class StoreObserver
         if (is_string($store->watermark_filename) && $this->storageDisk->exists($store->watermark_filename)) {
             $this->storageDisk->delete($store->watermark_filename);
         }
+
+        $this->storageDisk->deleteDirectory(
+            config('images.product_image_path') .
+            '/' .
+            Str::slug($store->domain)
+        );
+
     }
 
 }
