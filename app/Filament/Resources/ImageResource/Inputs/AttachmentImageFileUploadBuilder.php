@@ -12,7 +12,7 @@ class AttachmentImageFileUploadBuilder extends FileUpload
   public static function make(string $name): static
   {
     return parent::make($name)
-      ->directory(config('images.product_images_path') . config('images.product_original_path_append'))
+      ->directory(config('images.product_image_path') . config('images.product_original_path_append'))
       ->image()
       ->imageEditor()
       ->getUploadedFileNameForStorageUsing(
