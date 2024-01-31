@@ -196,10 +196,10 @@ CREATE TABLE `base_item_image` (
   `image_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `base_items_uploaded_files`;
+DROP TABLE IF EXISTS `base_item_uploaded_file`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `base_items_uploaded_files` (
+CREATE TABLE `base_item_uploaded_file` (
   `base_item_id` int DEFAULT NULL,
   `uploaded_file_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
