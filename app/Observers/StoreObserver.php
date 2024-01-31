@@ -3,10 +3,18 @@
 namespace App\Observers;
 
 use App\Models\Store;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class StoreObserver
 {
+    protected Filesystem $storageDisk;
+
+    function __construct()
+    {
+        $this->storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
+    }
 
     /**
      * Handle the Store "deleted" event.
@@ -22,10 +30,8 @@ class StoreObserver
             $category->delete();
         }
 
-        $storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
-
-        if (is_string($store->watermark_filename) && $storageDisk->exists($store->watermark_filename)) {
-            $storageDisk->delete($store->watermark_filename);
+        if (is_string($store->watermark_filename) && $this->storageDisk->exists($store->watermark_filename)) {
+            $this->storageDisk->delete($store->watermark_filename);
         }
     }
 

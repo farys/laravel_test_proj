@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Image as ImageModel;
 use App\Models\Store;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -11,6 +12,13 @@ use Intervention\Image\ImageManager;
 
 class ImageObserver
 {
+
+    protected Filesystem $storageDisk;
+
+    public function __construct()
+    {
+        $this->storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
+    }
     /**
      * Handle the Image "created" event.
      */
@@ -76,12 +84,11 @@ class ImageObserver
         $stores = Store::all();
         // create image manager with desired driver
         $manager = new ImageManager(new Driver());
-        $storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
 
-        $image = $manager->read($storageDisk->get($imageRecord->attachment_file_name));
+        $image = $manager->read($this->storageDisk->get($imageRecord->attachment_file_name));
         $image->scale(width: config('images.thumbnail_scale'));
 
-        $storageDisk->put(
+        $this->storageDisk->put(
             config('images.product_image_path')
             . config('images.product_thumbnail_path_append')
             . '/' . Str::slug($imageRecord->name)
@@ -90,10 +97,10 @@ class ImageObserver
         );
 
         foreach ($stores as $store) {
-            $image = $manager->read($storageDisk->get($imageRecord->attachment_file_name));
+            $image = $manager->read($this->storageDisk->get($imageRecord->attachment_file_name));
             $image->scale(width: config('images.normal_scale'));
-            $image->place($storageDisk->get($store->watermark_filename));
-            $storageDisk->put(
+            $image->place($this->storageDisk->get($store->watermark_filename));
+            $this->storageDisk->put(
                 config('images.product_image_path')
                 . '/' . Str::slug($store->domain)
                 . '/' . Str::slug($imageRecord->name)
@@ -106,8 +113,6 @@ class ImageObserver
     protected function deleteImageWithVariants(?string $imageAttachmentFilename, $imageRecordName, $leaveOriginalFile = false)
     {
         $stores = Store::all();
-
-        $storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
         $imageNameSlug = Str::slug($imageRecordName);
         $filesToDelete = [];
 
@@ -131,11 +136,11 @@ class ImageObserver
         }
 
         foreach ($filesToDelete as $fileToDelete) {
-            if (! is_string($fileToDelete) || ! $storageDisk->exists($fileToDelete)) {
+            if (! is_string($fileToDelete) || ! $this->storageDisk->exists($fileToDelete)) {
                 unset($fileToDelete);
             }
         }
 
-        $storageDisk->delete($filesToDelete);
+        $this->storageDisk->delete($filesToDelete);
     }
 }
