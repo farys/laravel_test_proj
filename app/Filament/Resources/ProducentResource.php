@@ -23,52 +23,56 @@ class ProducentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function getLabel(): string
+    public static function getLabel() : string
     {
         return __('Producent');
     }
 
-    public static function getPluralLabel(): string
+    public static function getPluralLabel() : string
     {
         return __('Producents');
     }
 
-    public static function getRecordTitle(?Model $record): string|null|Htmlable
+    public static function getRecordTitle(?Model $record) : string|null|Htmlable
     {
         return $record->name;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Form $form) : Form
     {
         return $form
-            ->schema([
-
-                Grid::make(1)->columnSpan(1)->schema([
-                    TextInputWithSlugAttachedBuilder::make('name', 'link')
-                        ->columnSpan(2)
-                        ->required(),
-                    TextInput::make('title')
-                        ->columnSpan(2),
-                    TextInput::make('link')
-                        ->columnSpan(2)
-                        ->required()
-                        ->unique(BaseItemProducent::class, 'link', ignoreRecord: true),
-                ]),
-                Grid::make(2)->columnSpan(2)->schema([
-                    TextInput::make('min_delivery_days')
-                        ->rule('gt:0')
-                        ->columnSpan(1)
-                        ->required(),
-                    TextInput::make('max_delivery_days')
-                        ->gt('min_delivery_days')
-                        ->columnSpan(1)
-                        ->required(),
-                    ProducentImageFileUploadBuilder::make('image_file_name'),
-                ]),
-            ])->columns(3);
+            ->schema(self::getFormInputs())->columns(3);
     }
 
-    public static function table(Table $table): Table
+    public static function getFormInputs() : array
+    {
+        return [
+            Grid::make(1)->columnSpan(1)->schema([
+                TextInputWithSlugAttachedBuilder::make('name', 'link')
+                    ->columnSpan(2)
+                    ->required(),
+                TextInput::make('title')
+                    ->columnSpan(2),
+                TextInput::make('link')
+                    ->columnSpan(2)
+                    ->required()
+                    ->unique(BaseItemProducent::class, 'link', ignoreRecord: true),
+            ]),
+            Grid::make(2)->columnSpan(2)->schema([
+                TextInput::make('min_delivery_days')
+                    ->rule('gt:0')
+                    ->columnSpan(1)
+                    ->required(),
+                TextInput::make('max_delivery_days')
+                    ->gt('min_delivery_days')
+                    ->columnSpan(1)
+                    ->required(),
+                ProducentImageFileUploadBuilder::make('image_file_name'),
+            ]),
+        ];
+    }
+
+    public static function table(Table $table) : Table
     {
         return $table
             ->columns([
@@ -91,14 +95,14 @@ class ProducentResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
+    public static function getRelations() : array
     {
         return [
             //
         ];
     }
 
-    public static function getPages(): array
+    public static function getPages() : array
     {
         return [
             'index' => Pages\ListProducents::route('/'),

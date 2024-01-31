@@ -69,10 +69,7 @@ class BaseItemResource extends Resource
                         ->searchable(['name'])
                         ->preload()
                         ->required()
-                        ->createOptionForm([
-                            TextInput::make('name')
-                                ->required(),
-                        ]),
+                        ->createOptionForm(ProducentResource::getFormInputs()),
 
                     Fieldset::make(__('Synchronization'))->schema([
 
