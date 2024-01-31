@@ -24,7 +24,20 @@ class ImageObserver
      */
     public function updated(ImageModel $imageRecord) : void
     {
-        $this->regenerateVariantsForOriginalImage($imageRecord);
+        $name_dirty = $imageRecord->isDirty('name');
+
+        //rename image wariants filenames if the name of model has been changed
+        if ($name_dirty) {
+            $oldImageRecordAttrs = $imageRecord->getOriginal();
+
+            $this->deleteImageWithVariants(
+                $oldImageRecordAttrs['attachment_file_name'],
+                $oldImageRecordAttrs['name'],
+                true
+            );
+            $this->regenerateVariantsForOriginalImage($imageRecord);
+        }
+
     }
 
     /**
@@ -39,7 +52,7 @@ class ImageObserver
 
         $imageRecord->baseItems()->detach();
 
-        $this->deleteImageWithVariants($imageRecord);
+        $this->deleteImageWithVariants($imageRecord->attachment_file_name, $imageRecord->name);
     }
 
     /**
@@ -55,7 +68,7 @@ class ImageObserver
      */
     public function forceDeleted(ImageModel $imageRecord) : void
     {
-        $this->deleteImageWithVariants($imageRecord);
+        $this->deleteImageWithVariants($imageRecord->attachment_file_name, $imageRecord->name);
     }
 
     protected function regenerateVariantsForOriginalImage(ImageModel $imageRecord)
@@ -90,26 +103,37 @@ class ImageObserver
         }
     }
 
-    protected function deleteImageWithVariants(ImageModel $imageRecord)
+    protected function deleteImageWithVariants(?string $imageAttachmentFilename, $imageRecordName, $leaveOriginalFile = false)
     {
         $stores = Store::all();
 
         $storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
-        $imageNameSlug = Str::slug($imageRecord->name);
-        $filesToDelete = [
-            $imageRecord->attachment_file_name,
-            //thumbnail
+        $imageNameSlug = Str::slug($imageRecordName);
+        $filesToDelete = [];
+
+        if (! $leaveOriginalFile && is_string($imageAttachmentFilename)) {
+            $filesToDelete[] = $imageAttachmentFilename;
+        }
+
+        //thumbnail
+        $filesToDelete[] =
             config('images.product_image_path')
             . config('images.product_thumbnail_path_append')
-            . '/' . Str::slug($imageRecord->name)
-            . ".png",
-        ];
+            . '/' . $imageNameSlug
+            . ".png";
 
+        //each image per domain
         foreach ($stores as $store) {
             $filesToDelete[] = config('images.product_image_path')
                 . '/' . Str::slug($store->domain)
                 . '/' . $imageNameSlug
                 . ".png";
+        }
+
+        foreach ($filesToDelete as $fileToDelete) {
+            if (! is_string($fileToDelete) || ! $storageDisk->exists($fileToDelete)) {
+                unset($fileToDelete);
+            }
         }
 
         $storageDisk->delete($filesToDelete);

@@ -17,6 +17,8 @@ class BaseItemProducentObserver
         }
 
         $storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
-        $storageDisk->delete($producent->image_file_name);
+        if (is_string($producent->image_file_name) && $storageDisk->exists($producent->image_file_name)) {
+            $storageDisk->delete($producent->image_file_name);
+        }
     }
 }

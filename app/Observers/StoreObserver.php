@@ -14,16 +14,19 @@ class StoreObserver
     public function deleted(Store $store) : void
     {
 
-        foreach ($store->items as  $item) {
+        foreach ($store->items as $item) {
             $item->delete();
         }
 
         foreach ($store->categories as $category) {
             $category->delete();
         }
-        
+
         $storageDisk = Storage::disk(config('filament.default_filesystem_disk'));
-        $storageDisk->delete($store->watermark_filename);
+
+        if (is_string($store->watermark_filename) && $storageDisk->exists($store->watermark_filename)) {
+            $storageDisk->delete($store->watermark_filename);
+        }
     }
 
 }
