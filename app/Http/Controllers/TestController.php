@@ -12,22 +12,21 @@ class TestController extends Controller
     {
         /**
          * First approach of getting store by requested domain 
-         * @var Store */ 
-        $store = $requestedStore->get(); 
+         * @var Store */
+        $store = $requestedStore->get();
 
         /**
          * Second approach of getting store by requested domain
          * Initialized by LoadRequestedStore middleware
          * @var Store */
         //dd($request->attributes->get('requestedStore'));
-    
+
         $debugArr = [
             'is_trusted' => $request->isFromTrustedProxy(),
             'requestedStoreDomain' => $store->domain,
             'categories' => $store->categories()->pluck('name'),
         ];
 
-        dd($debugArr);
-        return "a";
+        return response()->json($debugArr, 200, [], JSON_PRETTY_PRINT);
     }
 }
