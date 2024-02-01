@@ -20,10 +20,8 @@ class RequestHomepageOfStoreTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_returns_not_successfull_response_if_using_not_configured_host_for_not_configured_store_homepage(): void
+    public function test_returns_not_successfull_response_if_using_default_host_for_not_configured_store_homepage(): void
     {
-        Store::factory()->create(['domain'=>'different-domain.com']);
-
         $response = $this->get('/');
 
         $response->assertStatus(404);
