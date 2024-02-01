@@ -1,5 +1,5 @@
 <?php
-namespace App\Filament\Resources\ProducentResource;
+namespace App\Filament\Resources\ProducentResource\Inputs;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Get;

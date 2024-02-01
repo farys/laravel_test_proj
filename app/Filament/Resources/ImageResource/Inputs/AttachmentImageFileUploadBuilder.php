@@ -1,11 +1,9 @@
 <?php
-namespace App\Filament\Resources\ImageResource;
+namespace App\Filament\Resources\ImageResource\Inputs;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Get;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
 
 class AttachmentImageFileUploadBuilder extends FileUpload
 {
