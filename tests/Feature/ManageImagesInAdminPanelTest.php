@@ -28,23 +28,23 @@ class ManageImagesInAdminPanelTest extends TestCase
         $this->actingAs($adminUser);
     }
 
+    public function test_should_successfully_create_stores_with_watermark_images() : void
+    {
+        $stores = $this->createStoresWithWatermarkThroughLivewire(2);
+
+        $this->assertDatabaseHas('stores', [
+            'domain' => $stores->first()->domain,
+        ]);
+    }
+
     public function test_should_successfully_create_image_with_variants_images() : void
     {
         $image = UploadedFile::fake()->image('example.jpg', 500, 500);
-        $watermark = UploadedFile::fake()->image('watermark.jpg', 200, 200);
         $expectedFileName = Str::slug('test image');
 
         Storage::fake(config('filament.default_filesystem_disk'));
 
-        $stores = Store::factory(2)->make();
-        foreach ($stores as $store) {
-
-            Livewire::test(CreateStore::class)
-                ->fillForm($store->getAttributes())
-                ->set('data.watermark_filename', [$watermark])
-                ->call('create')
-                ->assertHasNoFormErrors();
-        }
+        $stores = $this->createStoresWithWatermarkThroughLivewire(2);
 
         Livewire::test(CreateImage::class)
             ->fillForm([
@@ -81,5 +81,21 @@ class ManageImagesInAdminPanelTest extends TestCase
 
         Storage::disk(config('filament.default_filesystem_disk'))
             ->assertExists($filesToCheck);
+    }
+
+    protected function createStoresWithWatermarkThroughLivewire(int $howMany)
+    {
+        $stores = Store::factory($howMany)->make();
+        $watermark = UploadedFile::fake()->image('watermark.jpg', 200, 200);
+
+        foreach ($stores as $store) {
+
+            Livewire::test(CreateStore::class)
+                ->fillForm($store->getAttributes())
+                ->set('data.watermark_filename', [$watermark])
+                ->call('create')
+                ->assertHasNoFormErrors();
+        }
+        return $stores;
     }
 }
