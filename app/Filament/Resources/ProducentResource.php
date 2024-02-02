@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Forms\Inputs\TextInputWithSlugAttachedBuilder;
+use App\Filament\Forms\Inputs\TextInputWithSlugAttached;
 use App\Filament\Resources\ProducentResource\Pages;
-use App\Filament\Resources\ProducentResource\ProducentImageFileUploadBuilder;
+use App\Filament\Resources\ProducentResource\Inputs\ProducentImageFileUpload;
 use App\Models\BaseItemProducent;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
@@ -48,7 +48,7 @@ class ProducentResource extends Resource
     {
         return [
             Grid::make(1)->columnSpan(1)->schema([
-                TextInputWithSlugAttachedBuilder::make('name', 'link')
+                TextInputWithSlugAttached::make('name', 'link')
                     ->columnSpan(2)
                     ->required(),
                 TextInput::make('title')
@@ -67,7 +67,7 @@ class ProducentResource extends Resource
                     ->gt('min_delivery_days')
                     ->columnSpan(1)
                     ->required(),
-                ProducentImageFileUploadBuilder::make('image_file_name'),
+                ProducentImageFileUpload::make('image_file_name'),
             ]),
         ];
     }

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\StandardActiveStatus;
-use App\Filament\Resources\ImageResource\AttachmentImageFileUploadBuilder;
+use App\Filament\Resources\ImageResource\Inputs\AttachmentImageFileUpload;
 use App\Filament\Resources\ImageResource\Pages;
 use App\Filament\Resources\ImageResource\RelationManagers;
 use App\Filament\Resources\ImageResource\RelationManagers\RepresentedBaseItemsRelationManager;
@@ -29,7 +29,7 @@ class ImageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Form $form) : Form
     {
         return $form
             ->schema([
@@ -41,7 +41,7 @@ class ImageResource extends Resource
                     ->default(StandardActiveStatus::ACTIVE)
                     ->disablePlaceholderSelection()
                     ->required(),
-                AttachmentImageFileUploadBuilder::make('attachment_file_name')
+                AttachmentImageFileUpload::make('attachment_file_name')
                     ->required(),
                 Select::make('baseItems')
                     ->relationship('baseItems', 'name')
@@ -52,7 +52,7 @@ class ImageResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(Table $table) : Table
     {
         return $table
             ->columns([
@@ -72,14 +72,14 @@ class ImageResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
+    public static function getRelations() : array
     {
         return [
             RepresentedBaseItemsRelationManager::class
         ];
     }
 
-    public static function getPages(): array
+    public static function getPages() : array
     {
         return [
             'index' => Pages\ListImages::route('/'),

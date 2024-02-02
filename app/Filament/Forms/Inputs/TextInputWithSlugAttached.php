@@ -5,7 +5,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 
-class TextInputWithSlugAttachedBuilder
+class TextInputWithSlugAttached
 {
   public static function make(string $name, string $slugFieldName): TextInput
   {
