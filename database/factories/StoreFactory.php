@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,11 +17,16 @@ class StoreFactory extends Factory
      */
     public function definition() : array
     {
+        $domainName = fake()->unique()->domainName();
+
         return [
-            'domain' => fake()->unique()->domainName(),
-            //'watermark_filename' => fake()->file(),
+            'domain' => $domainName,
             'company_name' => fake()->company(),
             'site_title' => fake()->title(),
+            'site_address' => 'https://'.$domainName,
+            'account_number' => fake()->numerify('## #### #### #### #### #### ####'),
+            'account_receiver' => fake()->company(),
+            'account_bank_name' => fake()->randomElement(['Example Bank', 'Second Example Bank']),
         ];
     }
 }
